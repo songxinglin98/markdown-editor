@@ -3,6 +3,7 @@ import { open, save } from "@tauri-apps/plugin-dialog";
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import Toolbar from "./components/Toolbar";
+import FileTree from "./components/FileTree";
 import Editor from "./components/Editor";
 import Preview from "./components/Preview";
 import "./App.css";
@@ -66,11 +67,19 @@ function App() {
       filters: [{ name: "Markdown", extensions: ["md", "markdown", "txt"] }],
     });
     if (!selected) return;
-    const text = await readTextFile(selected as string);
-    setContent(text);
-    setFilePath(selected as string);
-    setIsModified(false);
-    await updateTitle(selected as string, false);
+    await openFile(selected as string);
+  }, []);
+
+  const openFile = useCallback(async (path: string) => {
+    try {
+      const text = await readTextFile(path);
+      setContent(text);
+      setFilePath(path);
+      setIsModified(false);
+      await updateTitle(path, false);
+    } catch (err) {
+      console.error("Failed to open file:", err);
+    }
   }, [updateTitle]);
 
   const handleSave = useCallback(async () => {
@@ -148,6 +157,7 @@ function App() {
         isModified={isModified}
       />
       <div className="flex flex-1 overflow-hidden border-t border-gray-200 dark:border-gray-700">
+        <FileTree onFileSelect={openFile} currentFile={filePath} />
         <Editor ref={editorRef} content={content} onChange={markModified} />
         <Preview content={content} />
       </div>

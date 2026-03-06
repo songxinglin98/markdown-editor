@@ -20,11 +20,13 @@ const Editor = forwardRef<HTMLTextAreaElement, EditorProps>(
     };
 
     return (
-      <div className="pane editor-pane">
-        <div className="pane-header">Editor</div>
+      <div className="flex flex-col flex-1 min-w-0 border-r border-gray-200 dark:border-gray-700">
+        <div className="px-3.5 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-[#2d2d2d] border-b border-gray-200 dark:border-gray-700 select-none">
+          Editor
+        </div>
         <textarea
           ref={ref}
-          className="editor-textarea"
+          className="editor-textarea flex-1 w-full resize-none p-4 text-sm leading-relaxed bg-white dark:bg-[#1e1e1e] text-gray-900 dark:text-gray-300 outline-none border-none"
           value={content}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}

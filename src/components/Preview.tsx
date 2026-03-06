@@ -25,10 +25,12 @@ const Preview: React.FC<PreviewProps> = ({ content }) => {
   const html = useMemo(() => marked.parse(content) as string, [content]);
 
   return (
-    <div className="pane preview-pane">
-      <div className="pane-header">Preview</div>
+    <div className="flex flex-col flex-1 min-w-0">
+      <div className="px-3.5 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-[#2d2d2d] border-b border-gray-200 dark:border-gray-700 select-none">
+        Preview
+      </div>
       <div
-        className="preview-content markdown-body"
+        className="markdown-body flex-1 overflow-auto p-5 bg-white dark:bg-[#1e1e1e]"
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </div>

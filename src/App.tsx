@@ -138,7 +138,7 @@ function App() {
   const charCount = content.length;
 
   return (
-    <div className="app">
+    <div className="flex flex-col h-screen bg-gray-100 dark:bg-[#1e1e1e] text-gray-900 dark:text-gray-300 font-sans text-sm antialiased">
       <Toolbar
         onNew={handleNew}
         onOpen={handleOpen}
@@ -147,15 +147,15 @@ function App() {
         onFormat={insertFormat}
         isModified={isModified}
       />
-      <div className="editor-layout">
+      <div className="flex flex-1 overflow-hidden border-t border-gray-200 dark:border-gray-700">
         <Editor ref={editorRef} content={content} onChange={markModified} />
         <Preview content={content} />
       </div>
-      <div className="status-bar">
-        <span className="status-filename">
+      <div className="flex justify-between items-center px-3.5 py-1 bg-gray-100 dark:bg-[#007acc] border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-indigo-100 shrink-0 select-none">
+        <span>
           {isModified ? "● " : ""}{fileName}
         </span>
-        <span className="status-stats">
+        <span>
           {wordCount} words · {charCount} chars
         </span>
       </div>

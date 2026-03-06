@@ -87,3 +87,110 @@
   font-family: var(--editor-font);
   tab-size: 2;
 }
+
+/* ===== Milkdown Editor Styles ===== */
+.milkdown-editor-wrapper {
+  @apply h-full;
+}
+
+.milkdown-editor-wrapper .milkdown {
+  @apply h-full;
+}
+
+.milkdown-editor-wrapper .editor {
+  @apply h-full p-6 outline-none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+/* Override Milkdown nord theme for dark mode compatibility */
+.dark .milkdown {
+  --nord-background: #1e1e1e;
+  --nord-foreground: #d4d4d4;
+  --nord-outline: #3c3c3c;
+  --nord-line: #3c3c3c;
+  --nord-surface: #252526;
+  --nord-solid: #007acc;
+}
+
+/* Milkdown content styling */
+.milkdown .editor h1 {
+  @apply text-3xl font-bold mb-4 mt-6 pb-2 border-b border-gray-200 dark:border-gray-700;
+}
+
+.milkdown .editor h2 {
+  @apply text-2xl font-semibold mb-3 mt-5 pb-1 border-b border-gray-200 dark:border-gray-700;
+}
+
+.milkdown .editor h3 {
+  @apply text-xl font-semibold mb-2 mt-4;
+}
+
+.milkdown .editor p {
+  @apply mb-4;
+}
+
+.milkdown .editor ul,
+.milkdown .editor ol {
+  @apply pl-6 mb-4;
+}
+
+.milkdown .editor li {
+  @apply mb-1;
+}
+
+.milkdown .editor blockquote {
+  @apply border-l-4 border-blue-500 pl-4 py-1 my-4 italic text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50;
+}
+
+.milkdown .editor code {
+  @apply bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono;
+}
+
+.milkdown .editor pre {
+  @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto mb-4;
+}
+
+.milkdown .editor pre code {
+  @apply bg-transparent p-0;
+}
+
+.milkdown .editor hr {
+  @apply border-t-2 border-gray-200 dark:border-gray-700 my-6;
+}
+
+.milkdown .editor a {
+  @apply text-blue-500 hover:underline;
+}
+
+.milkdown .editor strong {
+  @apply font-bold;
+}
+
+.milkdown .editor em {
+  @apply italic;
+}
+
+/* Table styling */
+.milkdown .editor table {
+  @apply border-collapse w-full mb-4;
+}
+
+.milkdown .editor th,
+.milkdown .editor td {
+  @apply border border-gray-200 dark:border-gray-700 py-2 px-3;
+}
+
+.milkdown .editor th {
+  @apply bg-gray-50 dark:bg-gray-800 font-semibold;
+}
+
+/* Task list styling */
+.milkdown .editor .task-list-item {
+  @apply flex items-start gap-2 list-none;
+}
+
+.milkdown .editor .task-list-item input {
+  @apply mt-1.5;
+}

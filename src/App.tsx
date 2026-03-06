@@ -4,8 +4,7 @@ import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import Toolbar from "./components/Toolbar";
 import FileTree from "./components/FileTree";
-import Editor from "./components/Editor";
-import Preview from "./components/Preview";
+import MilkdownEditor, { MilkdownEditorHandle } from "./components/MilkdownEditor";
 import "./App.css";
 
 const DEMO = `# Welcome to Markdown Editor
@@ -41,7 +40,7 @@ function App() {
   const [content, setContent] = useState(DEMO);
   const [filePath, setFilePath] = useState<string | null>(null);
   const [isModified, setIsModified] = useState(false);
-  const editorRef = useRef<HTMLTextAreaElement>(null);
+  const editorRef = useRef<MilkdownEditorHandle>(null);
 
   const updateTitle = useCallback(async (path: string | null, modified: boolean) => {
     const name = path ? path.split("/").pop()! : "Untitled";
@@ -61,15 +60,6 @@ function App() {
     await updateTitle(null, false);
   }, [updateTitle]);
 
-  const handleOpen = useCallback(async () => {
-    const selected = await open({
-      multiple: false,
-      filters: [{ name: "Markdown", extensions: ["md", "markdown", "txt"] }],
-    });
-    if (!selected) return;
-    await openFile(selected as string);
-  }, []);
-
   const openFile = useCallback(async (path: string) => {
     try {
       const text = await readTextFile(path);
@@ -81,6 +71,15 @@ function App() {
       console.error("Failed to open file:", err);
     }
   }, [updateTitle]);
+
+  const handleOpen = useCallback(async () => {
+    const selected = await open({
+      multiple: false,
+      filters: [{ name: "Markdown", extensions: ["md", "markdown", "txt"] }],
+    });
+    if (!selected) return;
+    await openFile(selected as string);
+  }, [openFile]);
 
   const handleSave = useCallback(async () => {
     if (filePath) {
@@ -124,23 +123,50 @@ function App() {
     return () => window.removeEventListener("keydown", handler);
   }, [handleSave, handleOpen, handleNew]);
 
-  const insertFormat = useCallback(
-    (prefix: string, suffix = "", placeholder = "") => {
-      const el = editorRef.current;
-      if (!el) return;
-      const start = el.selectionStart;
-      const end = el.selectionEnd;
-      const selected = content.substring(start, end) || placeholder;
-      const next =
-        content.substring(0, start) + prefix + selected + suffix + content.substring(end);
-      markModified(next);
-      setTimeout(() => {
-        el.focus();
-        el.setSelectionRange(start + prefix.length, start + prefix.length + selected.length);
-      }, 0);
-    },
-    [content, markModified]
-  );
+  // Commands for the toolbar
+  const handleToolbarCommand = useCallback((command: string) => {
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    switch (command) {
+      case "bold":
+        editor.toggleBold();
+        break;
+      case "italic":
+        editor.toggleItalic();
+        break;
+      case "h1":
+        editor.insertHeading(1);
+        break;
+      case "h2":
+        editor.insertHeading(2);
+        break;
+      case "h3":
+        editor.insertHeading(3);
+        break;
+      case "code":
+        editor.insertInlineCode();
+        break;
+      case "codeblock":
+        editor.insertCodeBlock();
+        break;
+      case "quote":
+        editor.insertBlockquote();
+        break;
+      case "hr":
+        editor.insertHorizontalRule();
+        break;
+      case "bullet":
+        editor.insertBulletList();
+        break;
+      case "ordered":
+        editor.insertOrderedList();
+        break;
+      case "link":
+        editor.insertLink();
+        break;
+    }
+  }, []);
 
   const fileName = filePath ? filePath.split("/").pop()! : "Untitled";
   const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0;
@@ -153,13 +179,12 @@ function App() {
         onOpen={handleOpen}
         onSave={handleSave}
         onSaveAs={handleSaveAs}
-        onFormat={insertFormat}
+        onCommand={handleToolbarCommand}
         isModified={isModified}
       />
       <div className="flex flex-1 overflow-hidden border-t border-gray-200 dark:border-gray-700">
         <FileTree onFileSelect={openFile} currentFile={filePath} />
-        <Editor ref={editorRef} content={content} onChange={markModified} />
-        <Preview content={content} />
+        <MilkdownEditor ref={editorRef} content={content} onChange={markModified} />
       </div>
       <div className="flex justify-between items-center px-3.5 py-1 bg-gray-100 dark:bg-[#007acc] border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-indigo-100 shrink-0 select-none">
         <span>

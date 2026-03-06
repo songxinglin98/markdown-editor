@@ -12,9 +12,11 @@
   "app": {
     "windows": [
       {
-        "title": "markdown-editor",
-        "width": 800,
-        "height": 600
+      "title": "Markdown Editor",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 800,
+        "minHeight": 600
       }
     ],
     "security": {

@@ -3,7 +3,7 @@ import { open, save } from "@tauri-apps/plugin-dialog";
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import Toolbar from "./components/Toolbar";
-import FileTree from "./components/FileTree";
+import TableOfContents from "./components/TableOfContents";
 import MilkdownEditor, { MilkdownEditorHandle } from "./components/MilkdownEditor";
 import "./App.css";
 
@@ -40,6 +40,7 @@ function App() {
   const [content, setContent] = useState(DEMO);
   const [filePath, setFilePath] = useState<string | null>(null);
   const [isModified, setIsModified] = useState(false);
+  const [showToc, setShowToc] = useState(true);
   const editorRef = useRef<MilkdownEditorHandle>(null);
 
   const updateTitle = useCallback(async (path: string | null, modified: boolean) => {
@@ -165,7 +166,15 @@ function App() {
       case "link":
         editor.insertLink();
         break;
+      case "toc":
+        setShowToc(!showToc);
+        break;
     }
+  }, [showToc]);
+
+  // Handle heading click from TOC
+  const handleHeadingClick = useCallback((headingId: string) => {
+    editorRef.current?.scrollToHeading(headingId);
   }, []);
 
   const fileName = filePath ? filePath.split("/").pop()! : "Untitled";
@@ -181,9 +190,12 @@ function App() {
         onSaveAs={handleSaveAs}
         onCommand={handleToolbarCommand}
         isModified={isModified}
+        showToc={showToc}
       />
       <div className="flex flex-1 overflow-hidden border-t border-gray-200 dark:border-gray-700">
-        <FileTree onFileSelect={openFile} currentFile={filePath} />
+        {showToc && (
+          <TableOfContents content={content} onHeadingClick={handleHeadingClick} />
+        )}
         <MilkdownEditor ref={editorRef} content={content} onChange={markModified} />
       </div>
       <div className="flex justify-between items-center px-3.5 py-1 bg-gray-100 dark:bg-[#007acc] border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-indigo-100 shrink-0 select-none">

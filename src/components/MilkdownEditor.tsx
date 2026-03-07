@@ -37,6 +37,7 @@ export interface MilkdownEditorHandle {
   insertBulletList: () => void;
   insertOrderedList: () => void;
   insertLink: () => void;
+  scrollToHeading: (headingText: string) => void;
 }
 
 const MilkdownEditorInner = forwardRef<MilkdownEditorHandle, MilkdownEditorProps>(({
@@ -130,6 +131,24 @@ const MilkdownEditorInner = forwardRef<MilkdownEditorHandle, MilkdownEditorProps
       const text = selection?.toString() || "link text";
       document.execCommand("insertText", false, `[${text}](url)`);
     },
+    scrollToHeading: (headingText: string) => {
+      // Find heading elements in the editor
+      const editorEl = document.querySelector(".milkdown-editor-wrapper");
+      if (!editorEl) return;
+
+      const headings = editorEl.querySelectorAll("h1, h2, h3, h4, h5, h6");
+      for (const heading of headings) {
+        const text = heading.textContent?.trim() || "";
+        // Normalize text for comparison
+        const normalizedSearch = headingText.toLowerCase().replace(/[^\w\s\u4e00-\u9fff-]/g, "").replace(/\s+/g, "-");
+        const normalizedHeading = text.toLowerCase().replace(/[^\w\s\u4e00-\u9fff-]/g, "").replace(/\s+/g, "-");
+
+        if (normalizedHeading === normalizedSearch) {
+          heading.scrollIntoView({ behavior: "smooth", block: "start" });
+          return;
+        }
+      }
+    },
   }), [get]);
 
   // Update content when it changes externally (e.g., opening a new file)
@@ -171,6 +190,7 @@ const MilkdownEditor = forwardRef<MilkdownEditorHandle, MilkdownEditorProps>((pr
     insertBulletList: () => innerRef.current?.insertBulletList(),
     insertOrderedList: () => innerRef.current?.insertOrderedList(),
     insertLink: () => innerRef.current?.insertLink(),
+    scrollToHeading: (headingText: string) => innerRef.current?.scrollToHeading(headingText),
   }), []);
 
   // If content length changes dramatically, it's likely a new file

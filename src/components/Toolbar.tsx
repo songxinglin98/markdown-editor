@@ -7,6 +7,7 @@ interface ToolbarProps {
   onSaveAs: () => void;
   onCommand: (command: string) => void;
   isModified: boolean;
+  showToc: boolean;
 }
 
 const formatButtons = [
@@ -25,10 +26,14 @@ const formatButtons = [
 ];
 
 const Toolbar: React.FC<ToolbarProps> = ({
-  onNew, onOpen, onSave, onSaveAs, onCommand, isModified,
+  onNew, onOpen, onSave, onSaveAs, onCommand, isModified, showToc,
 }) => {
   const btnBase = "px-3 py-1.5 text-xs font-medium bg-white dark:bg-[#3c3c3c] border border-gray-200 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-[#4c4c4c] active:bg-gray-100 dark:active:bg-[#505050] transition-colors cursor-pointer select-none";
   const fmtBtn = "px-2 py-1 text-xs font-medium bg-white dark:bg-[#3c3c3c] border border-gray-200 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-[#4c4c4c] active:bg-gray-100 dark:active:bg-[#505050] transition-colors cursor-pointer select-none";
+  const tocBtn = `px-2 py-1 text-xs font-medium border rounded transition-colors cursor-pointer select-none ${showToc
+      ? "bg-blue-500 text-white border-blue-600 hover:bg-blue-600"
+      : "bg-white dark:bg-[#3c3c3c] border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-[#4c4c4c]"
+    }`;
 
   return (
     <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-[#252526] border-b border-gray-200 dark:border-gray-700 shrink-0 select-none">
@@ -65,6 +70,16 @@ const Toolbar: React.FC<ToolbarProps> = ({
           </button>
         ))}
       </div>
+
+      <div className="w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1" />
+
+      <button
+        className={tocBtn}
+        title="Toggle Table of Contents"
+        onClick={() => onCommand("toc")}
+      >
+        📑 TOC
+      </button>
     </div>
   );
 };

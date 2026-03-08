@@ -8,6 +8,7 @@ interface ToolbarProps {
   onCommand: (command: string) => void;
   isModified: boolean;
   showToc: boolean;
+  isExporting: boolean;
 }
 
 const formatButtons = [
@@ -26,13 +27,17 @@ const formatButtons = [
 ];
 
 const Toolbar: React.FC<ToolbarProps> = ({
-  onNew, onOpen, onSave, onSaveAs, onCommand, isModified, showToc,
+  onNew, onOpen, onSave, onSaveAs, onCommand, isModified, showToc, isExporting,
 }) => {
   const btnBase = "px-3 py-1.5 text-xs font-medium bg-white dark:bg-[#3c3c3c] border border-gray-200 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-[#4c4c4c] active:bg-gray-100 dark:active:bg-[#505050] transition-colors cursor-pointer select-none";
   const fmtBtn = "px-2 py-1 text-xs font-medium bg-white dark:bg-[#3c3c3c] border border-gray-200 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-[#4c4c4c] active:bg-gray-100 dark:active:bg-[#505050] transition-colors cursor-pointer select-none";
   const tocBtn = `px-2 py-1 text-xs font-medium border rounded transition-colors cursor-pointer select-none ${showToc
       ? "bg-blue-500 text-white border-blue-600 hover:bg-blue-600"
       : "bg-white dark:bg-[#3c3c3c] border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-[#4c4c4c]"
+    }`;
+  const exportBtn = `px-2 py-1 text-xs font-medium border rounded transition-colors select-none ${isExporting
+      ? "bg-gray-300 dark:bg-gray-600 border-gray-400 cursor-not-allowed opacity-60"
+      : "bg-green-500 text-white border-green-600 hover:bg-green-600 cursor-pointer"
     }`;
 
   return (
@@ -79,6 +84,15 @@ const Toolbar: React.FC<ToolbarProps> = ({
         onClick={() => onCommand("toc")}
       >
         📑 TOC
+      </button>
+
+      <button
+        className={exportBtn}
+        title="Export to PDF (⌘E)"
+        onClick={() => !isExporting && onCommand("exportPdf")}
+        disabled={isExporting}
+      >
+        {isExporting ? "⏳ Exporting..." : "📄 PDF"}
       </button>
     </div>
   );

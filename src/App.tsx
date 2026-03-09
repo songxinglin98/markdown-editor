@@ -144,32 +144,53 @@ function App() {
 
       // Create a clone of the editor content for PDF generation
       const cloneContainer = document.createElement("div");
-      cloneContainer.style.position = "absolute";
-      cloneContainer.style.left = "-9999px";
-      cloneContainer.style.top = "0";
-      cloneContainer.style.width = "800px";
-      cloneContainer.style.padding = "40px";
-      cloneContainer.style.backgroundColor = "#ffffff";
-      cloneContainer.style.color = "#1a1a1a";
+      cloneContainer.style.cssText = `
+        position: absolute;
+        left: -9999px;
+        top: 0;
+        width: 800px;
+        padding: 40px;
+        background-color: #ffffff;
+        color: #1a1a1a;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      `;
       cloneContainer.innerHTML = editorEl.innerHTML;
       document.body.appendChild(cloneContainer);
 
-      // Style the clone for better PDF output
+      // Remove all oklch color references by applying inline styles
+      const allElements = cloneContainer.querySelectorAll("*");
+      allElements.forEach((el) => {
+        const htmlEl = el as HTMLElement;
+        // Reset colors to safe RGB values
+        htmlEl.style.color = "#1a1a1a";
+        htmlEl.style.backgroundColor = "transparent";
+        htmlEl.style.borderColor = "#dddddd";
+      });
+
+      // Style the clone for better PDF output with all RGB colors
       const style = document.createElement("style");
       style.textContent = `
-        .milkdown h1 { font-size: 28px; font-weight: bold; margin: 24px 0 16px; color: #1a1a1a; }
-        .milkdown h2 { font-size: 24px; font-weight: bold; margin: 20px 0 12px; color: #1a1a1a; }
-        .milkdown h3 { font-size: 20px; font-weight: bold; margin: 16px 0 10px; color: #1a1a1a; }
-        .milkdown p { font-size: 14px; line-height: 1.6; margin: 8px 0; color: #333; }
-        .milkdown ul, .milkdown ol { margin: 8px 0; padding-left: 24px; }
-        .milkdown li { font-size: 14px; line-height: 1.6; color: #333; }
-        .milkdown code { background: #f5f5f5; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-        .milkdown pre { background: #f5f5f5; padding: 16px; border-radius: 8px; overflow: auto; }
-        .milkdown blockquote { border-left: 4px solid #ddd; padding-left: 16px; margin: 12px 0; color: #666; }
-        .milkdown hr { border: none; border-top: 1px solid #ddd; margin: 16px 0; }
-        .milkdown a { color: #0066cc; text-decoration: underline; }
-        .milkdown strong { font-weight: bold; }
-        .milkdown em { font-style: italic; }
+        * { color: #1a1a1a !important; background-color: transparent !important; }
+        h1 { font-size: 28px !important; font-weight: bold !important; margin: 24px 0 16px !important; }
+        h2 { font-size: 24px !important; font-weight: bold !important; margin: 20px 0 12px !important; }
+        h3 { font-size: 20px !important; font-weight: bold !important; margin: 16px 0 10px !important; }
+        h4 { font-size: 18px !important; font-weight: bold !important; margin: 14px 0 8px !important; }
+        h5 { font-size: 16px !important; font-weight: bold !important; margin: 12px 0 6px !important; }
+        h6 { font-size: 14px !important; font-weight: bold !important; margin: 10px 0 4px !important; }
+        p { font-size: 14px !important; line-height: 1.6 !important; margin: 8px 0 !important; }
+        ul, ol { margin: 8px 0 !important; padding-left: 24px !important; }
+        li { font-size: 14px !important; line-height: 1.6 !important; }
+        code { background: #f5f5f5 !important; padding: 2px 6px !important; border-radius: 4px !important; font-family: monospace !important; color: #333 !important; }
+        pre { background: #f5f5f5 !important; padding: 16px !important; border-radius: 8px !important; overflow: auto !important; }
+        pre code { background: transparent !important; padding: 0 !important; }
+        blockquote { border-left: 4px solid #dddddd !important; padding-left: 16px !important; margin: 12px 0 !important; color: #666666 !important; }
+        hr { border: none !important; border-top: 1px solid #dddddd !important; margin: 16px 0 !important; }
+        a { color: #0066cc !important; text-decoration: underline !important; }
+        strong { font-weight: bold !important; }
+        em { font-style: italic !important; }
+        table { border-collapse: collapse !important; width: 100% !important; margin: 12px 0 !important; }
+        th, td { border: 1px solid #dddddd !important; padding: 8px !important; text-align: left !important; }
+        th { background: #f5f5f5 !important; font-weight: bold !important; }
       `;
       cloneContainer.appendChild(style);
 
@@ -179,6 +200,7 @@ function App() {
         useCORS: true,
         logging: false,
         backgroundColor: "#ffffff",
+        removeContainer: false,
       });
 
       // Remove the clone

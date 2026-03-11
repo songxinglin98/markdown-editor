@@ -19,6 +19,7 @@ import { trailing } from "@milkdown/kit/plugin/trailing";
 import { listener, listenerCtx } from "@milkdown/plugin-listener";
 import { nord } from "@milkdown/theme-nord";
 import { Milkdown, MilkdownProvider, useEditor } from "@milkdown/react";
+import { tocPlugin } from "../plugins/tocPlugin";
 import "@milkdown/theme-nord/style.css";
 
 interface MilkdownEditorProps {
@@ -72,6 +73,7 @@ const MilkdownEditorInner = forwardRef<MilkdownEditorHandle, MilkdownEditorProps
       .use(indent)
       .use(trailing)
       .use(listener)
+      .use(tocPlugin)
   );
 
   // Expose commands via ref

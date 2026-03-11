@@ -194,3 +194,61 @@
 .milkdown .editor .task-list-item input {
   @apply mt-1.5;
 }
+
+/* ===== TOC Widget Styles ===== */
+.toc-container {
+  @apply my-4;
+}
+
+.toc-widget {
+  @apply bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4;
+}
+
+.toc-title {
+  @apply text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3 pb-2 border-b border-gray-200 dark:border-gray-700;
+}
+
+.toc-list {
+  @apply space-y-1;
+}
+
+.toc-item {
+  @apply text-sm;
+}
+
+.toc-item a {
+  @apply text-gray-700 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 cursor-pointer transition-colors no-underline hover:no-underline;
+}
+
+.toc-item:hover {
+  @apply bg-gray-100 dark:bg-gray-700/50;
+}
+
+/* TOC indentation levels */
+.toc-level-0 { @apply pl-0; }
+.toc-level-1 { @apply pl-4; }
+.toc-level-2 { @apply pl-8; }
+.toc-level-3 { @apply pl-12; }
+.toc-level-4 { @apply pl-16; }
+.toc-level-5 { @apply pl-20; }
+
+/* TOC level indicators */
+.toc-level-0::before { content: ""; }
+.toc-level-1::before,
+.toc-level-2::before,
+.toc-level-3::before,
+.toc-level-4::before,
+.toc-level-5::before {
+  content: "•";
+  @apply text-gray-400 mr-2;
+}
+
+/* Hide original [TOC] text */
+.toc-original-hidden {
+  @apply hidden;
+}
+
+/* Empty TOC state */
+.toc-empty .toc-empty-text {
+  @apply text-gray-400 dark:text-gray-500 text-sm italic;
+}

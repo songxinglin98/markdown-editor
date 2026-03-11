@@ -1,0 +1,244 @@
+/**
+ * Print / PDF Export Styles
+ * Typora GitHub-like styling for PDF export
+ */
+
+@page {
+  size: A4;
+  margin: 20mm 18mm 25mm 18mm;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  font-size: 11pt;
+  line-height: 1.8;
+  color: #1a1a1a;
+  background: white;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  padding: 40px;
+}
+
+@media print {
+  body {
+    padding: 0;
+  }
+}
+
+.print-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.print-instructions {
+  background: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 30px;
+  font-size: 14px;
+  color: #1565c0;
+}
+
+.print-instructions strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.print-instructions kbd {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+@media print {
+  .print-instructions {
+    display: none !important;
+  }
+}
+
+/* Typography - Typora GitHub Style */
+h1 {
+  font-size: 2em;
+  font-weight: 700;
+  margin: 1.5em 0 0.8em 0;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #eaecef;
+  color: #000;
+  page-break-after: avoid;
+}
+
+h1:first-child, .print-content > h1:first-of-type {
+  margin-top: 0;
+}
+
+h2 {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin: 1.3em 0 0.6em 0;
+  padding-bottom: 0.25em;
+  border-bottom: 1px solid #eaecef;
+  color: #000;
+  page-break-after: avoid;
+}
+
+h3 {
+  font-size: 1.25em;
+  font-weight: 600;
+  margin: 1.2em 0 0.5em 0;
+  color: #000;
+  page-break-after: avoid;
+}
+
+h4, h5, h6 {
+  font-size: 1em;
+  font-weight: 600;
+  margin: 1em 0 0.4em 0;
+  color: #000;
+  page-break-after: avoid;
+}
+
+p {
+  margin: 0 0 1em 0;
+  text-align: justify;
+  orphans: 3;
+  widows: 3;
+}
+
+/* Lists */
+ul, ol {
+  margin: 0.5em 0 1em 0;
+  padding-left: 2em;
+}
+
+li {
+  margin: 0.25em 0;
+  line-height: 1.7;
+}
+
+li > ul, li > ol {
+  margin: 0.2em 0;
+}
+
+/* Code - Inline */
+code {
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", Monaco, Menlo, Consolas, monospace;
+  font-size: 0.85em;
+  background-color: rgba(27, 31, 35, 0.05);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  color: #d63384;
+}
+
+/* Code - Block */
+pre {
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", Monaco, Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  background-color: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  padding: 16px;
+  margin: 1em 0;
+  overflow-x: auto;
+  line-height: 1.45;
+  page-break-inside: avoid;
+}
+
+pre code {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  color: #24292e;
+  font-size: inherit;
+}
+
+/* Blockquote */
+blockquote {
+  margin: 1em 0;
+  padding: 0.5em 1em;
+  border-left: 4px solid #0366d6;
+  background-color: #f8f9fa;
+  color: #57606a;
+  page-break-inside: avoid;
+}
+
+blockquote p {
+  margin: 0;
+}
+
+blockquote p + p {
+  margin-top: 0.5em;
+}
+
+/* Horizontal rule */
+hr {
+  border: none;
+  border-top: 1px solid #e1e4e8;
+  margin: 2em 0;
+}
+
+/* Links */
+a {
+  color: #0366d6;
+  text-decoration: none;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+  font-size: 0.95em;
+  page-break-inside: avoid;
+}
+
+th, td {
+  border: 1px solid #dfe2e5;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+th {
+  background-color: #f6f8fa;
+  font-weight: 600;
+}
+
+tr:nth-child(even) {
+  background-color: #fafbfc;
+}
+
+/* Images */
+img {
+  max-width: 100%;
+  height: auto;
+  page-break-inside: avoid;
+}
+
+/* Strong and emphasis */
+strong {
+  font-weight: 600;
+}
+
+em {
+  font-style: italic;
+}
+
+/* Task lists */
+.task-list-item {
+  list-style: none;
+  margin-left: -1.5em;
+}
+
+.task-list-item input {
+  margin-right: 0.5em;
+}

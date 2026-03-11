@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { open, save } from "@tauri-apps/plugin-dialog";
-import { readTextFile, writeTextFile, writeFile } from "@tauri-apps/plugin-fs";
+import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
+import printStyles from "./styles/print.css?raw";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import html2canvas from "html2canvas";
-import { jsPDF } from "jspdf";
+import { invoke } from "@tauri-apps/api/core";
+import { tempDir } from "@tauri-apps/api/path";
 import Toolbar from "./components/Toolbar";
 import TableOfContents from "./components/TableOfContents";
 import MilkdownEditor, { MilkdownEditorHandle } from "./components/MilkdownEditor";
@@ -115,9 +116,9 @@ function App() {
     await updateTitle(savePath, false);
   }, [filePath, content, updateTitle]);
 
-  // Export to PDF
+  // Export to PDF using system browser print (Typora-like high quality)
   const handleExportPDF = useCallback(async () => {
-    const editorEl = document.querySelector(".milkdown-editor-wrapper");
+    const editorEl = document.querySelector(".milkdown-editor-wrapper .editor");
     if (!editorEl) {
       console.error("Editor element not found");
       return;
@@ -126,121 +127,49 @@ function App() {
     setIsExporting(true);
 
     try {
-      // Get the default filename
-      const defaultName = filePath
-        ? filePath.split("/").pop()!.replace(/\.(md|markdown|txt)$/, ".pdf")
-        : "untitled.pdf";
+      // Get document title for the PDF
+      const docTitle = filePath
+        ? filePath.split("/").pop()!.replace(/\.(md|markdown|txt)$/, "")
+        : "Untitled";
 
-      // Ask user where to save
-      const savePath = await save({
-        filters: [{ name: "PDF", extensions: ["pdf"] }],
-        defaultPath: defaultName,
-      });
+      // Build the print HTML with Typora-like styling
+      const printHTML = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>${docTitle} - Print to PDF</title>
+  <style>${printStyles}</style>
+  <script>
+    // Auto-trigger print dialog when page loads
+    window.onload = function() {
+      setTimeout(function() {
+        window.print();
+      }, 300);
+    };
+  </script>
+</head>
+<body>
+  <div class="print-instructions">
+    <strong>📄 Export to PDF</strong>
+    Press <kbd>⌘</kbd> + <kbd>P</kbd> (Mac) or <kbd>Ctrl</kbd> + <kbd>P</kbd> (Windows) to print.<br>
+    In the print dialog, select <strong>"Save as PDF"</strong> as the destination.
+  </div>
+  <div class="print-content">
+    ${editorEl.innerHTML}
+  </div>
+</body>
+</html>`;
 
-      if (!savePath) {
-        setIsExporting(false);
-        return;
-      }
+      // Save HTML to temp directory and open in system browser
+      const tmpDir = await tempDir();
+      const htmlPath = `${tmpDir}${docTitle.replace(/[^a-zA-Z0-9_-]/g, "_")}_print.html`;
 
-      // Create a clone of the editor content for PDF generation
-      const cloneContainer = document.createElement("div");
-      cloneContainer.style.cssText = `
-        position: absolute;
-        left: -9999px;
-        top: 0;
-        width: 800px;
-        padding: 40px;
-        background-color: #ffffff;
-        color: #1a1a1a;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      `;
-      cloneContainer.innerHTML = editorEl.innerHTML;
-      document.body.appendChild(cloneContainer);
+      await writeTextFile(htmlPath, printHTML);
+      // Use our custom Rust command to open the file
+      await invoke("open_file_in_browser", { path: htmlPath });
 
-      // Remove all oklch color references by applying inline styles
-      const allElements = cloneContainer.querySelectorAll("*");
-      allElements.forEach((el) => {
-        const htmlEl = el as HTMLElement;
-        // Reset colors to safe RGB values
-        htmlEl.style.color = "#1a1a1a";
-        htmlEl.style.backgroundColor = "transparent";
-        htmlEl.style.borderColor = "#dddddd";
-      });
-
-      // Style the clone for better PDF output with all RGB colors
-      const style = document.createElement("style");
-      style.textContent = `
-        * { color: #1a1a1a !important; background-color: transparent !important; }
-        h1 { font-size: 28px !important; font-weight: bold !important; margin: 24px 0 16px !important; }
-        h2 { font-size: 24px !important; font-weight: bold !important; margin: 20px 0 12px !important; }
-        h3 { font-size: 20px !important; font-weight: bold !important; margin: 16px 0 10px !important; }
-        h4 { font-size: 18px !important; font-weight: bold !important; margin: 14px 0 8px !important; }
-        h5 { font-size: 16px !important; font-weight: bold !important; margin: 12px 0 6px !important; }
-        h6 { font-size: 14px !important; font-weight: bold !important; margin: 10px 0 4px !important; }
-        p { font-size: 14px !important; line-height: 1.6 !important; margin: 8px 0 !important; }
-        ul, ol { margin: 8px 0 !important; padding-left: 24px !important; }
-        li { font-size: 14px !important; line-height: 1.6 !important; }
-        code { background: #f5f5f5 !important; padding: 2px 6px !important; border-radius: 4px !important; font-family: monospace !important; color: #333 !important; }
-        pre { background: #f5f5f5 !important; padding: 16px !important; border-radius: 8px !important; overflow: auto !important; }
-        pre code { background: transparent !important; padding: 0 !important; }
-        blockquote { border-left: 4px solid #dddddd !important; padding-left: 16px !important; margin: 12px 0 !important; color: #666666 !important; }
-        hr { border: none !important; border-top: 1px solid #dddddd !important; margin: 16px 0 !important; }
-        a { color: #0066cc !important; text-decoration: underline !important; }
-        strong { font-weight: bold !important; }
-        em { font-style: italic !important; }
-        table { border-collapse: collapse !important; width: 100% !important; margin: 12px 0 !important; }
-        th, td { border: 1px solid #dddddd !important; padding: 8px !important; text-align: left !important; }
-        th { background: #f5f5f5 !important; font-weight: bold !important; }
-      `;
-      cloneContainer.appendChild(style);
-
-      // Generate canvas from the clone
-      const canvas = await html2canvas(cloneContainer, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: "#ffffff",
-        removeContainer: false,
-      });
-
-      // Remove the clone
-      document.body.removeChild(cloneContainer);
-
-      // Create PDF
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4",
-      });
-
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-      const imgX = (pdfWidth - imgWidth * ratio) / 2;
-
-      // Handle multi-page PDF
-      const pageHeight = pdfHeight * (imgWidth / pdfWidth);
-      let heightLeft = imgHeight;
-      let position = 0;
-
-      pdf.addImage(imgData, "PNG", imgX, position * ratio, imgWidth * ratio, imgHeight * ratio);
-      heightLeft -= pageHeight;
-
-      while (heightLeft > 0) {
-        position -= pageHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, "PNG", imgX, position * ratio, imgWidth * ratio, imgHeight * ratio);
-        heightLeft -= pageHeight;
-      }
-
-      // Get PDF as array buffer and save using Tauri
-      const pdfOutput = pdf.output("arraybuffer");
-      await writeFile(savePath, new Uint8Array(pdfOutput));
-
-      console.log("PDF exported successfully to:", savePath);
+      console.log("Opened print preview in system browser:", htmlPath);
     } catch (err) {
       console.error("Failed to export PDF:", err);
     } finally {

@@ -8,6 +8,8 @@
   "permissions": [
     "core:default",
     "opener:default",
+    "opener:allow-open-path",
+    "shell:allow-open",
     "fs:allow-read-text-file",
     "fs:allow-write-text-file",
     "fs:allow-write-file",
@@ -15,6 +17,7 @@
     "fs:scope-document-recursive",
     "fs:scope-download-recursive",
     "fs:scope-home-recursive",
+    "fs:scope-temp-recursive",
     "dialog:allow-open",
     "dialog:allow-save"
   ]
